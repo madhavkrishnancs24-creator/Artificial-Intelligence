@@ -1,0 +1,72 @@
++*In[1]:*+
+[source, ipython3]
+----
+# Vacuum Cleaner Agent
+# Two areas: A and B
+
+area = {
+    "A": input("Enter status of Area A (clean/dirty): ").lower(),
+    "B": input("Enter status of Area B (clean/dirty): ").lower()
+}
+
+position = input("Enter vacuum position (A/B): ").upper()
+
+print("\n--- Vacuum Cleaner Starting ---")
+
+while area["A"] == "dirty" or area["B"] == "dirty":
+
+    print("\nVacuum is in Area", position)
+
+    # Clean current area
+    if area[position] == "dirty":
+        print("Area", position, "is dirty.")
+        print("Cleaning Area", position, "...")
+        area[position] = "clean"
+        print("Area", position, "is now clean.")
+
+    else:
+        print("Area", position, "is already clean.")
+
+    # Move to the other area
+    if position == "A":
+        position = "B"
+    else:
+        position = "A"
+
+print("\n--- Cleaning Complete ---")
+print("Area A:", area["A"])
+print("Area B:", area["B"])
+print("Both areas are clean!")
+
+----
+
+
++*Out[1]:*+
+----
+Enter status of Area A (clean/dirty):  clean
+Enter status of Area B (clean/dirty):  dirty
+Enter vacuum position (A/B):  a
+
+
+--- Vacuum Cleaner Starting ---
+
+Vacuum is in Area A
+Area A is already clean.
+
+Vacuum is in Area B
+Area B is dirty.
+Cleaning Area B ...
+Area B is now clean.
+
+--- Cleaning Complete ---
+Area A: clean
+Area B: clean
+Both areas are clean!
+----
+
+
++*In[ ]:*+
+[source, ipython3]
+----
+
+----
