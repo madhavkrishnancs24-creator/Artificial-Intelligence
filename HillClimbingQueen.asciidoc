@@ -1,0 +1,117 @@
++*In[ ]:*+
+[source, ipython3]
+----
+import numpy as np
+import time
+N = int(input("Enter number of queens: "))
+while True:
+    board = np.random.randint(0, N, size=N)
+    conflicts = 0
+    for i in range(N):
+        for j in range(i + 1, N):
+            if board[i] == board[j] or abs(i - j) == abs(board[i] - board[j]):
+                conflicts += 1
+    print(f"\n {conflicts} conflicts.")
+    while True:
+        if conflicts == 0:
+            break
+        best_row = -1
+        best_col = -1
+        min_conflicts = conflicts
+        for row in range(N):
+            original_col = board[row]
+            for col in range(N):
+                if col == original_col:
+                    continue
+                board[row] = col
+                test_conflicts = 0
+                for i in range(N):
+                    for j in range(i + 1, N):
+                        if board[i] == board[j] or abs(i - j) == abs(board[i] - board[j]):
+                            test_conflicts += 1
+                if test_conflicts < min_conflicts:
+                    min_conflicts = test_conflicts
+                    best_row = row
+                    best_col = col
+                board[row] = original_col
+        if min_conflicts >= conflicts:
+            break 
+        else:
+            board[best_row] = best_col
+            conflicts = min_conflicts
+            print(f"\nMoving queen in row {best_row} to column {best_col} (Conflicts left: {conflicts})")
+            for i in range(N):
+                for j in range(N):
+                    if board[i] == j:
+                        print("Q ", end="")
+                    else:
+                        print(". ", end="")
+                print()
+            time.sleep(0.4)
+    if conflicts == 0:
+        break
+print("SOLUTION:\n")
+for i in range(N):
+    for j in range(N):
+        if board[i] == j:
+            print("Q ", end="")
+        else:
+            print(". ", end="")
+    print()
+----
+
+
++*Out[ ]:*+
+----
+Enter number of queens:  8
+
+
+ 8 conflicts.
+
+Moving queen in row 2 to column 7 (Conflicts left: 5)
+. . . . . . Q . 
+. . Q . . . . . 
+. . . . . . . Q 
+. Q . . . . . . 
+. . . . Q . . . 
+. . Q . . . . . 
+. . . . Q . . . 
+. Q . . . . . . 
+
+Moving queen in row 6 to column 5 (Conflicts left: 3)
+. . . . . . Q . 
+. . Q . . . . . 
+. . . . . . . Q 
+. Q . . . . . . 
+. . . . Q . . . 
+. . Q . . . . . 
+. . . . . Q . . 
+. Q . . . . . . 
+
+Moving queen in row 7 to column 3 (Conflicts left: 1)
+. . . . . . Q . 
+. . Q . . . . . 
+. . . . . . . Q 
+. Q . . . . . . 
+. . . . Q . . . 
+. . Q . . . . . 
+. . . . . Q . . 
+. . . Q . . . . 
+
+Moving queen in row 5 to column 0 (Conflicts left: 0)
+. . . . . . Q . 
+. . Q . . . . . 
+. . . . . . . Q 
+. Q . . . . . . 
+. . . . Q . . . 
+Q . . . . . . . 
+. . . . . Q . . 
+. . . Q . . . . 
+----
+
+
++*In[ ]:*+
+[source, ipython3]
+----
+
+----
