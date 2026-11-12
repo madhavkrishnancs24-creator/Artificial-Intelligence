@@ -1,0 +1,102 @@
++*In[3]:*+
+[source, ipython3]
+----
+import re
+
+def is_variable(term):
+    return isinstance(term, str) and term[0].islower()
+
+def is_compound(term):
+    return isinstance(term, tuple) and len(term) > 1
+
+def parse(expr):
+    tokens = re.findall(r'[A-Za-z0-9_]+|\(|\)|,', expr.replace(' ', ''))
+    def helper(idx):
+        name = tokens[idx]
+        idx += 1
+        if idx < len(tokens) and tokens[idx] == '(':
+            idx += 1
+            args = []
+            while tokens[idx] != ')':
+                arg, idx = helper(idx)
+                args.append(arg)
+                if tokens[idx] == ',':
+                    idx += 1
+            return (name, *args), idx + 1
+        return name, idx
+    return helper(0)[0]
+
+def occurs_check(var, term, theta):
+    if var == term:
+        return True
+    elif is_variable(term) and term in theta:
+        return occurs_check(var, theta[term], theta)
+    elif is_compound(term):
+        return any(occurs_check(var, arg, theta) for arg in term[1:])
+    return False
+
+def unify_var(var, x, theta):
+    if var in theta:
+        return unify(theta[var], x, theta)
+    elif is_variable(x) and x in theta:
+        return unify(var, theta[x], theta)
+    elif occurs_check(var, x, theta):
+        return None
+    else:
+        theta[var] = x
+        return theta
+
+def unify(x, y, theta=None):
+    if theta is None:
+        theta = {}
+    if x == y:
+        return theta
+    elif is_variable(x):
+        return unify_var(x, y, theta)
+    elif is_variable(y):
+        return unify_var(y, x, theta)
+    elif is_compound(x) and is_compound(y):
+        if x[0] != y[0] or len(x) != len(y):
+            return None
+        for arg_x, arg_y in zip(x[1:], y[1:]):
+            theta = unify(arg_x, arg_y, theta)
+            if theta is None:
+                return None
+        return theta
+    else:
+        return None
+
+def format_term(term):
+    if is_compound(term):
+        return f"{term[0]}({', '.join(format_term(a) for a in term[1:])})"
+    return str(term)
+
+def get_substitution_set(expr1_str, expr2_str):
+    mgu = unify(parse(expr1_str), parse(expr2_str))
+    if mgu is None:
+        return "Unification Failed"
+    return {k: format_term(v) for k, v in mgu.items()}
+
+if __name__ == "__main__":
+    e1 = "P(x, John)"
+    e2 = "P(Mary, y)"
+    print("Expression 1:", e1)
+    print("Expression 2:", e2)
+    print("Substitution Set:", get_substitution_set(e1, e2))
+
+----
+
+
++*Out[3]:*+
+----
+Expression 1: P(x, John)
+Expression 2: P(Mary, y)
+Substitution Set: {'x': 'Mary', 'y': 'John'}
+----
+
+
++*In[ ]:*+
+[source, ipython3]
+----
+
+----
